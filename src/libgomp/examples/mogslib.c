@@ -14,7 +14,7 @@ void mogslib_set_chunksize(unsigned chunksize) {}
  *  @brief A function to interface with MOGSLib to register the amount of PEs in OpenMP.
  *  @details A C function to interface with OpenMP and direct the execution flow back to C++.
  */
-void mogslib_set_nPUs(unsigned npus) {}
+void mogslib_set_npus(unsigned npus) {}
 
 /**
  *  @brief A function to interface with MOGSLib to call the scheduler task mapping.

@@ -49,10 +49,10 @@ typedef enum omp_sched_t
   omp_sched_static = 1,
   omp_sched_dynamic = 2,
   omp_sched_guided = 3,
-  omp_sched_mogslib = 5,
-  omp_sched_binlpt = 6,
-  omp_sched_srr = 7,
-  omp_sched_auto = 8
+  omp_sched_mogslib = 4,
+  omp_sched_binlpt = 5,
+  omp_sched_srr = 6,
+  omp_sched_auto = 7
 } omp_sched_t;
 
 typedef enum omp_proc_bind_t
@@ -111,6 +111,7 @@ extern int omp_get_team_size (int) __GOMP_NOTHROW;
 extern int omp_get_active_level (void) __GOMP_NOTHROW;
 
 #include <stdbool.h>
+extern void omp_set_ntasks (unsigned) __GOMP_NOTHROW;
 extern void omp_set_workload (unsigned, unsigned *, unsigned, bool) __GOMP_NOTHROW;
 extern unsigned omp_loop_register (const char *) __GOMP_NOTHROW;
 extern void omp_loop_unregister (unsigned) __GOMP_NOTHROW;

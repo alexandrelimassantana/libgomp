@@ -1,10 +1,18 @@
 CC=gcc
+CPP=g++
+MOGSLIB=../../../../lb-framework
+
 CFLAGS=-rdynamic -g -fopenmp
+CPPFLAGS=-rdynamic -g -fopenmp -std=c++14
 
 all: pedro-test binlpt-01 binlpt-02
 
 pedro-test:
 	$(CC) $(CFLAGS) pedro-test.c -o pedro-test
+
+alexandre-tests:
+	$(CPP) $(CPPFLAGS) -c -I../build -I$(MOGSLIB)/include -g -O0 -fopenmp mogslib-02.cpp mogslib.cpp
+	$(CPP) $(CPPFLAGS) mogslib.o mogslib-02.o -o mogslib-test -Wl,-rpath=../build/.libs -L../build/.libs -lgomp
 
 # Trick for both linking against our modified libgomp AND use it at run time.
 binlpt-01: binlpt-01.c ../build/omp.h
@@ -20,4 +28,4 @@ binlpt-02: binlpt-02.c ../build/omp.h
 	@exit 1
 
 clean:
-	rm -f *.o pedro-test binlpt-01 binlpt-02
+	rm -f *.o pedro-test binlpt-01 binlpt-02 mogslib-test

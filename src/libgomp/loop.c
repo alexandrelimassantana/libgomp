@@ -133,6 +133,17 @@ void omp_set_workload(unsigned loop_id,
   __ntasks = ntasks;
 }
 
+/**
+ * @brief Sets the amount of tasks of the next parallel for loop.
+ * @details this is used in contrats to omp_set_workload for the MOGSLib API
+ */
+void omp_set_ntasks(unsigned ntasks)
+{
+  /* Make sure omp_set_workload() is not called in parallel. */
+  assert(gomp_thread()->ts.team_id == 0);
+  __ntasks = ntasks;
+}
+
 /*============================================================================*
  * Workload Sorting                                                           *
  *============================================================================*/
@@ -224,7 +235,7 @@ void sort(unsigned *a, unsigned n, unsigned *map)
 
 static unsigned *mogslib_balance(unsigned nthreads, unsigned nchunks)
 {
-  mogslib_set_nPUs(nthreads);
+  mogslib_set_npus(nthreads);
   mogslib_set_chunksize(nchunks);
   return mogslib_strategy_map();
 }
@@ -523,6 +534,7 @@ gomp_loop_init (struct gomp_work_share *ws, long start, long end, long incr,
     break;
 
   case GFS_MOGSLIB:
+  fprintf(stderr, "At MOGSLib\n");
     if (num_threads == 0)
         {
           struct gomp_thread *thr = gomp_thread ();
