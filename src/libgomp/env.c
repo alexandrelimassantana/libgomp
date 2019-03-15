@@ -107,6 +107,11 @@ parse_schedule (void)
       gomp_global_icv.run_sched_var = GFS_GUIDED;
       env += 6;
     }
+  else if (strncasecmp (env, "mogslib", 7) == 0)
+    {
+      gomp_global_icv.run_sched_var = GFS_MOGSLIB;
+      env += 7;
+    }
   else if (strncasecmp (env, "binlpt", 6) == 0)
     {
       gomp_global_icv.run_sched_var = GFS_BINLPT;
@@ -1082,6 +1087,8 @@ handle_omp_display_env (unsigned long stacksize, int wait_policy)
     case GFS_RUNTIME:
       fputs ("RUNTIME", stderr);
       break;
+    case GFS_MOGSLIB:
+      fputs ("MOGSLIB", stderr);
     case GFS_BINLPT:
       fputs ("BINLPT", stderr);
       break;
@@ -1341,6 +1348,7 @@ omp_set_schedule (omp_sched_t kind, int modifier)
       icv->run_sched_modifier = modifier;
       break;
     case omp_sched_dynamic:
+    case omp_sched_mogslib:
     case omp_sched_binlpt:
     case omp_sched_srr:
     case omp_sched_guided:

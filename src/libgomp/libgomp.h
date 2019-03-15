@@ -83,6 +83,7 @@ enum gomp_schedule_type
   GFS_STATIC,
   GFS_DYNAMIC,
   GFS_GUIDED,
+  GFS_MOGSLIB,
   GFS_BINLPT,
   GFS_SRR,
   GFS_AUTO
@@ -556,6 +557,7 @@ extern bool gomp_iter_guided_next_locked (long *, long *);
 #ifdef HAVE_SYNC_BUILTINS
 extern bool gomp_iter_dynamic_next (long *, long *);
 extern bool gomp_iter_guided_next (long *, long *);
+extern bool gomp_iter_mogslib_next (long *, long *);
 extern bool gomp_iter_binlpt_next (long *, long *);
 extern bool gomp_iter_srr_next (long *, long *);
 #endif

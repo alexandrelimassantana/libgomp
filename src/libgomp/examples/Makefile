@@ -8,12 +8,12 @@ pedro-test:
 
 # Trick for both linking against our modified libgomp AND use it at run time.
 binlpt-01: binlpt-01.c ../build/omp.h
-	$(CC) -c -I../build -g -O0 -fopenmp binlpt-01.c
-	$(CC) binlpt-01.o -o binlpt-01 -Wl,-rpath=../build/.libs/ -L../build/.libs -lgomp
+	$(CC) -c -I../build -g -O0 -fopenmp binlpt-01.c mogslib.c
+	$(CC) binlpt-01.o mogslib.o -o binlpt-01 -Wl,-rpath=../build/.libs/ -L../build/.libs -lgomp
 
 binlpt-02: binlpt-02.c ../build/omp.h
-	$(CC) -c -I../build -g -O0 -fopenmp binlpt-02.c
-	$(CC) binlpt-02.o -o binlpt-02 -Wl,-rpath=../build/.libs/ -L../build/.libs -lgomp
+	$(CC) -c -I../build -g -O0 -fopenmp binlpt-02.c mogslib.c
+	$(CC) binlpt-02.o mogslib.o -o binlpt-02 -Wl,-rpath=../build/.libs/ -L../build/.libs -lgomp
 
 ../build/omp.h:
 	@echo "[error] Can't find ../build/omp.h. Please build the libgomp library before trying to compile any example program."

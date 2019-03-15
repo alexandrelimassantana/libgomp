@@ -257,6 +257,43 @@ gomp_iter_dynamic_next (long *pstart, long *pend)
 extern unsigned __ntasks; /* Number of tasks. */
 
 bool
+gomp_iter_mogslib_next (long *pstart, long *pend)
+{
+  int i, j;                   /* Loop index.           */
+  int tid;                    /* Thread ID.            */
+  int start;                  /* Start of search.      */
+  struct gomp_thread *thr;    /* Thread.               */
+  struct gomp_work_share *ws; /* Work-Share construct. */
+  
+  thr = gomp_thread();
+  ws = thr->ts.work_share;
+  tid = omp_get_thread_num();
+  /* Search for next task. */
+  start = ws->thread_start[tid];
+  for (i = start; i < __ntasks; i++)
+  {
+     if (ws->taskmap[i] == tid)
+       goto found;
+  }
+
+  return (false);
+
+found:
+  
+  for (j = i + 1; j < __ntasks; j++)
+  {
+     if (ws->taskmap[j] != tid)
+       break;
+  }
+
+  ws->thread_start[tid] = j;
+  *pstart = ws->loop_start + i;
+  *pend = ws->loop_start + j;
+
+  return (true);
+}
+
+bool
 gomp_iter_binlpt_next (long *pstart, long *pend)
 {
   int i, j;                   /* Loop index.           */

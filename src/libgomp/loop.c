@@ -32,6 +32,8 @@
 #include <stdbool.h>
 #include "libgomp.h"
 
+#include "mogslib.h"
+
 /*============================================================================*
  * Workload Information                                                       *
  *============================================================================*/
@@ -214,6 +216,17 @@ void sort(unsigned *a, unsigned n, unsigned *map)
     map[i] = i;
 
   insertion(map, a, n);
+}
+
+/*============================================================================*
+ * MOGSLib Loop Scheduler                                                     *
+ *============================================================================*/
+
+static unsigned *mogslib_balance(unsigned nthreads, unsigned nchunks)
+{
+  mogslib_set_nPUs(nthreads);
+  mogslib_set_chunksize(nchunks);
+  return mogslib_strategy_map();
 }
 
 /*============================================================================*
@@ -509,6 +522,19 @@ gomp_loop_init (struct gomp_work_share *ws, long start, long end, long incr,
 #endif
     break;
 
+  case GFS_MOGSLIB:
+    if (num_threads == 0)
+        {
+          struct gomp_thread *thr = gomp_thread ();
+          struct gomp_team *team = thr->ts.team;
+          num_threads = (team != NULL) ? team->nthreads : 1;
+        }
+      __nchunks = (chunk_size == 1)? num_threads : chunk_size;
+      
+      ws->taskmap = mogslib_balance(num_threads, __nchunks);
+      ws->loop_start = start;
+      ws->thread_start = (unsigned *) calloc(num_threads, sizeof(int));
+      break;
   case GFS_BINLPT:
     {
       if (num_threads == 0)
@@ -621,6 +647,25 @@ gomp_loop_guided_start (long start, long end, long incr, long chunk_size,
 }
 
 static bool
+gomp_loop_mogslib_start (long start, long end, long incr, long chunk_size,
+           long *istart, long *iend)
+{
+  struct gomp_thread *thr = gomp_thread ();
+  bool ret;
+
+  if (gomp_work_share_start (false))
+    {
+      gomp_loop_init (thr->ts.work_share, start, end, incr,
+          GFS_MOGSLIB, chunk_size, 0);
+      gomp_work_share_init_done ();
+    }
+
+  ret = gomp_iter_mogslib_next (istart, iend);
+
+  return ret;
+}
+
+static bool
 gomp_loop_binlpt_start (long start, long end, long incr, long chunk_size,
            long *istart, long *iend)
 {
@@ -674,7 +719,8 @@ GOMP_loop_runtime_start (long start, long end, long incr,
     case GFS_GUIDED:
       return gomp_loop_guided_start (start, end, incr, icv->run_sched_modifier,
              istart, iend);
-
+    case GFS_MOGSLIB:
+      return gomp_loop_mogslib_start (start, end, incr, icv->run_sched_modifier, istart, iend);
     case GFS_BINLPT:
       return gomp_loop_binlpt_start (start, end, incr, icv->run_sched_modifier, istart, iend);
     case GFS_SRR:
@@ -840,6 +886,12 @@ gomp_loop_guided_next (long *istart, long *iend)
 }
 
 static bool
+gomp_loop_mogslib_next (long *istart, long *iend)
+{
+  return gomp_iter_mogslib_next (istart, iend);
+}
+
+static bool
 gomp_loop_binlpt_next (long *istart, long *iend)
 {
   return gomp_iter_binlpt_next (istart, iend);
@@ -865,6 +917,8 @@ GOMP_loop_runtime_next (long *istart, long *iend)
       return gomp_loop_dynamic_next (istart, iend);
     case GFS_GUIDED:
       return gomp_loop_guided_next (istart, iend);
+    case GFS_MOGSLIB:
+      return gomp_loop_mogslib_next (istart, iend);
     case GFS_BINLPT:
       return gomp_loop_binlpt_next (istart, iend);
     case GFS_SRR:
