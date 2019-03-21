@@ -10,7 +10,7 @@ all: pedro-test binlpt-01 binlpt-02
 pedro-test:
 	$(CC) $(CFLAGS) pedro-test.c -o pedro-test
 
-alexandre-tests:
+mogslib:
 	$(CPP) $(CPPFLAGS) -c -I../build -I$(MOGSLIB)/include -g -O0 -fopenmp mogslib-02.cpp mogslib.cpp
 	$(CPP) $(CPPFLAGS) mogslib.o mogslib-02.o -o mogslib-test -Wl,-rpath=../build/.libs -L../build/.libs -lgomp
 

@@ -2,8 +2,7 @@
 #include <mogslib/mogslib.ipp>
 
 #include <iostream>
-
-#include <omp.h>
+#include <stdio.h>
 
 /**
  *  @brief Set the amount of chunks in the OpenMP RTS datastructure.
@@ -32,8 +31,10 @@ inline unsigned *mogslib_call_strategy_map() {
   std::string strategy = "binlpt"; //TODO: Change here to add the strategy or call a custom function.
   try {
     auto schedule = MOGSLib::API::work(strategy);
-    omp_set_ntasks(schedule.size());
-    return schedule.data();
+    unsigned *arr = new unsigned[schedule.size()];
+    
+    std::copy(schedule.begin(), schedule.end(), arr);
+    return arr;
   } catch (std::string n) {
     std::cout << n << std::endl;
     exit(1);

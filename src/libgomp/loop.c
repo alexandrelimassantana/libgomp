@@ -237,6 +237,7 @@ static unsigned *mogslib_balance(unsigned nthreads, unsigned nchunks)
 {
   mogslib_set_npus(nthreads);
   mogslib_set_chunksize(nchunks);
+
   return mogslib_strategy_map();
 }
 
@@ -534,7 +535,6 @@ gomp_loop_init (struct gomp_work_share *ws, long start, long end, long incr,
     break;
 
   case GFS_MOGSLIB:
-  fprintf(stderr, "At MOGSLib\n");
     if (num_threads == 0)
         {
           struct gomp_thread *thr = gomp_thread ();
@@ -542,7 +542,6 @@ gomp_loop_init (struct gomp_work_share *ws, long start, long end, long incr,
           num_threads = (team != NULL) ? team->nthreads : 1;
         }
       __nchunks = (chunk_size == 1)? num_threads : chunk_size;
-      
       ws->taskmap = mogslib_balance(num_threads, __nchunks);
       ws->loop_start = start;
       ws->thread_start = (unsigned *) calloc(num_threads, sizeof(int));

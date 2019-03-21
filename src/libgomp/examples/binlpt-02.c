@@ -8,7 +8,7 @@ int main(void)
   unsigned id = omp_loop_register("main-loop");
 
   omp_set_schedule(omp_sched_binlpt, 0);
-  omp_set_num_threads(4);
+  omp_set_num_threads(2);
 
   unsigned workload[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   omp_set_workload(id, workload, 16, true);
