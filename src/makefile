@@ -18,7 +18,7 @@
 #
 
 # Common C source files.
-SRC = $(wildcard $(CURDIR)/common/*.c)
+SRC = $(wildcard $(CURDIR)/common/*.cpp)
 
 # Common Object files.
 OBJ = $(SRC:.c=.o)
@@ -27,56 +27,20 @@ OBJ = $(SRC:.c=.o)
 LIBS := $(OBJ) $(LIBS)
 
 # Phony list.
-.PHONY: benchmark
-.PHONY: libgomp-srr
-.PHONY: libgomp-adaptive
 .PHONY: lavamd
 
 # Builds everything.
-all: benchmark lavamd
-
-# Builds benchmark.
-benchmark: $(OBJ) $(LIBGOMP_SRR) $(LIBGOMP_ADAPTIVE)
-	cd benchmark && $(MAKE) all
+all: lavamd
 
 # Builds common objects.
 %.o: %.c
 	$(CC) $< $(CFLAGS) -c -o $@
 
-# Builds SRR libgomp.
-libgomp-srr:
-	mkdir -p libgomp-srr/libgomp/build ; \
-	cd libgomp-srr/libgomp/build ; \
-	CFLAGS="" LIBS="" PREFIX="" ../configure --disable-multilib ; \
-	$(MAKE)
-
-# Builds ADAPTIVE libgomp.
-libgomp-adaptive:
-	mkdir -p libgomp-adaptive/libgomp/build ; \
-	cd libgomp-adaptive/libgomp/build ; \
-	CFLAGS="-Wno-sizeof-pointer-memaccess" LIBS="" PREFIX="" ../configure --disable-multilib ; \
-	$(MAKE)
-
-# Cleans SRR libgomp.
-libgomp-srr-clean:
-	cd libgomp-srr/libgomp/build ; \
-	$(MAKE) distclean ; \
-	cd .. ; \
-	rm -rf libgomp-srr/libgomp/build
-	
-# Cleans ADAPTIVE libgomp.
-libgomp-adaptive-clean:
-	cd libgomp-adaptive/libgomp/build ; \
-	$(MAKE) distclean ; \
-	cd .. ; \
-	rm -rf libgomp-adaptive/libgomp/build
-
 # LavaMD.
-lavamd: $(LIBGOMP_SRR)
+lavamd:
 	cd lavamd && $(MAKE) all
 
 # Cleans everything.
 clean:
 	rm -f $(OBJ)
-	cd benchmark && $(MAKE) clean
 	cd lavamd && $(MAKE) clean

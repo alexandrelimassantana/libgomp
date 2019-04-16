@@ -22,7 +22,7 @@ EXEC = lavamd
 
 # Builds everything.
 all:
-	$(CC) $(CFLAGS) *.c -o $(BINDIR)/$(EXEC).elf $(LIBS) $(LIBGOMP_SRR)
+	$(CC) $(CFLAGS) *.cpp -o $(BINDIR)/$(EXEC).elf $(LIBS)
 
 # Cleans compilation files.
 clean:

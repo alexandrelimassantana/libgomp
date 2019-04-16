@@ -19,46 +19,26 @@
 
 # Directories.
 export BINDIR     = $(CURDIR)/bin
-export CONTRIBDIR = $(CURDIR)/contrib
 export INCDIR     = $(CURDIR)/include
 export LIBDIR     = $(CURDIR)/lib
 export SRCDIR     = $(CURDIR)/src
 
 # Libraries.
-export LIBGOMP_SRR = $(SRCDIR)/libgomp-srr/libgomp/build/.libs/libgomp.a
-export LIBGOMP_ADAPTIVE = $(SRCDIR)/libgomp-adaptive/libgomp/build/.libs/libgomp.a
-export LIBS += -lm
+export LIBS = -L $(LIBGOMP)/src/libgomp/build/.libs -lgomp -lm
 
 # Toolchain.
-export CC = gcc
+export CC = g++
 
 # Toolchain configuration.
-export CFLAGS  = -I $(CONTRIBDIR)/include
-export CFLAGS += -I $(INCDIR)
-export CFLAGS += -std=c99 -D_POSIX_C_SOURCE=200809L
-export CFLAGS += -pedantic -Wall -Wextra -Werror -fopenmp
+export CFLAGS += -I $(INCDIR) -I $(MOGSLIB)/include -I $(LIBGOMP)/src/libgomp/build
+export CFLAGS += --std=c++14 -fopenmp
+export CFLAGS += -Wall -Wextra -Werror
 export CFLAGS += -O3
 
 # Builds everything.
 all: 
 	mkdir -p $(BINDIR)
 	cd $(SRCDIR) && $(MAKE) all
-
-# Builds libgomp.
-libgomp-srr:
-	cd $(SRCDIR) && $(MAKE) libgomp-srr
-
-# Builds libgomp.
-libgomp-adaptive:
-	cd $(SRCDIR) && $(MAKE) libgomp-adaptive
-
-# Cleans libgomp.
-libgomp-srr-clean:
-	cd $(SRCDIR) && $(MAKE) libgomp-srr-clean
-
-# Cleans libgomp.
-libgomp-adaptive-clean:
-	cd $(SRCDIR) && $(MAKE) libgomp-adaptive-clean
 
 # Cleans compilation files.
 clean:
